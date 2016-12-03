@@ -1,20 +1,15 @@
+import os,re
 import pandas as pd
 from gensim.models import word2vec
-from utils import *
 from nltk.corpus import stopwords
-import os,re
+from collections import Counter
+from numpy import log
 
 
 os.chdir('/Users/pengfeiwang/Desktop/proj5/Fall2016-proj5-proj5-grp13/')
 dta = pd.read_csv('data/Combined_News_DJIA.csv', index_col=['Date'])
 
-dta.isnull().sum(axis=1).sum()
-
-y = dta['Label']
-x = dta.drop('Label', axis=1)
-x = x.applymap(lambda x: str(x))
-# x['Combined'] = x.apply(lambda i: ''.join(str(i)), axis=1)
-# x['Combined'] = x['Combined'].apply(lambda x: clean_sentence(x,True))
+dta.isnull().sum(axis=1).sum()  # 7 
 
 def clean_sentence(sentence ,remove_stopwords=True):
 	import re
@@ -29,6 +24,14 @@ def clean_sentence(sentence ,remove_stopwords=True):
 	return(sentence)
 
 
+y = dta['Label']
+x = dta.drop('Label', axis=1)
+x = x.applymap(lambda x: str(x))
+x['Combined'] = x.apply(lambda i: ''.join(str(i)), axis=1)
+x['Combined'] = x['Combined'].apply(lambda x: clean_sentence(x,True))
+x['dict'] = [dict(Counter(x['Combined'][i])) for i in range(x.shape[0])]
+
+# construct the corpus
 total = []
 for i in range(x.shape[0]):
 	for j in range(x.shape[1]):
@@ -45,9 +48,31 @@ context = 10          # Context window size
 downsampling = 1e-3   # Downsample setting for frequent words
 
 print 'Training model...'
-model = word2vec.Word2Vec(sentences, workers=num_workers, \
+model = word2vec.Word2Vec(total, workers=num_workers, \
             size=num_features, min_count = min_word_count, \
             window = context, sample = downsampling)
 
 model_name = 'try'
 model.save(model_name)
+
+
+# boK + tfidf
+bok = ['', '', '', '']
+while len(bok)<=1000:
+	for i in bok[-10]:
+		bok.append(model.most_similar(i)[0][0])
+
+x['dict'] = [{k:v for k,v in i.iteritems() if k in bok} for i in x['dict']]
+df = pd.DataFrame([{k:v for k,v in i.items()} for i in x['dict']])
+df = df.fillna(0)
+def tdidf(alist):
+	d_freq = len([i for i in alist if i!=0])
+	idf = log(1989/float(d_freq))
+	tfidf = [i*idf for i in alist]
+	return(tfidf)
+
+df = df.apply(lambda x: tdidf(x),axis=0)
+df.to_csv('data/boK.csv')
+
+
+
