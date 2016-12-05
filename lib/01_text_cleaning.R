@@ -116,21 +116,67 @@ GetTermFreq <- function(input_data) {
 
 # for 0 (decreased stock price)
 # 1-gram
-dat.comb.dtm0 <- dat.combine.dtm %>% filter(Label==0)
-dat.wordfreq0 <- GetTermFreq(dat.comb.dtm0)
+dat.wordfreq0 <- GetTermFreq(dat.combine.dtm %>% filter(Label==0))
 # 2-gram
-dat.2gram.dtm0 <- dat.2gram.dtm %>% filter(Label==0)
-dat.2gramfreq0 <- GetTermFreq(dat.2gram.dtm0)
+dat.2gramfreq0 <- GetTermFreq(dat.2gram.dtm %>% filter(Label==0))
+# 3-gram
+dat.3gramfreq0 <- GetTermFreq(dat.3gram.dtm %>% filter(Label==0))
 
 # for 1 (increased stock price)
-dat.comb.dtm1 <- dat.combine.dtm %>% filter(Label==1)
-dat.wordfreq1 <- GetTermFreq(dat.comb.dtm1)
+dat.wordfreq1 <- GetTermFreq(dat.combine.dtm %>% filter(Label==1))
+# 2-gram
+dat.2gramfreq1 <- GetTermFreq(dat.2gram.dtm %>% filter(Label==1))
+# 3-gram
+dat.3gramfreq1 <- GetTermFreq(dat.3gram.dtm %>% filter(Label==1))
 
 warning("Should we select Top 10 or 5 for each group of words (0 and 1 group)?")
 
 
+# Data Assembling ##########################################################################
+
+c(dat.wordfreq0$word[1:20])
+c(dat.2gramfreq0$word[1:20])
+c(dat.3gramfreq0$word[1:5])
+
+c(dat.wordfreq1$word[1:20])
+c(dat.2gramfreq1$word[1:20])
+c(dat.3gramfreq1$word[1:5])
+
+# 1-gram
+dat.1gram.highfreq <- dat.combine.dtm[, c(1, which(colnames(dat.combine.dtm) 
+                                   %in% c("polic", "use", "forc", 
+                                          "attack", "protest", "call")))] 
+
+colnames(dat.1gram.highfreq)[2:7] <- c("1_polic", "1_use", "1_forc", 
+                                       "0_attack", "0_protest", "0_call")
+
+# 2-gram 
+dat.2gram.highfreq <- dat.2gram.dtm[, c(1, which(colnames(dat.2gram.dtm) 
+                                  %in% c("court rule", "polic offic", 
+                                        "climat chang", "south africa")))] 
+
+colnames(dat.2gram.highfreq)[2:5] <- c("1_court_rule", "1_polic_offic", 
+                                       "0_climat_chang", "0_south_africa")
 
 
+# 3-gram 
+dat.3gram.highfreq <- dat.3gram.dtm[, c(1, which(colnames(dat.3gram.dtm) 
+                                   %in% c("human right watch", "nobel peac prize", "first time sinc", 
+                                          "osama bin laden", "presid barack obama", "world war ii")))] 
+
+colnames(dat.3gram.highfreq)[2:7] <- c("1_human_right_watch", "1_nobel_peac_prize", "1_first_time_sinc", 
+                                       "0_osama_bin_laden", "0_presid_barack_obama", "0_world_war_ii")
+
+# assemble all partitioned datasets
+dat.prediction <- dat.combine.dtm %>% 
+  select(Date, Label, text_body) %>% 
+  left_join(x = ., dat.1gram.highfreq, by = "Date") %>%
+  left_join(x = ., dat.2gram.highfreq, by = "Date") %>%
+  left_join(x = ., dat.3gram.highfreq, by = "Date")
+  
+
+# Data Saving #############################################################################
+saveRDS(dat.prediction, file = "data/dat_prediction.rds")
 
 
 
