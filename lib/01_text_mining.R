@@ -1,3 +1,9 @@
+# Basic Setup
+# Data Loading
+# Text Mining
+
+
+
 # Basic Setup #############################################################################
 # load package
 library(dplyr)
@@ -57,9 +63,9 @@ dim(dtm.nonsparse) # dim = 1989 by 556
 
 # convert to dataframe
 dat.combine.dtm <- cbind(Date = dat.combine$Date, 
-                   Label = dat.combine$Label,
-                   text_body = dat.combine$text_body,
-                   as.data.frame(as.matrix(dtm.nonsparse)))
+                         Label = dat.combine$Label,
+                         text_body = dat.combine$text_body,
+                         as.data.frame(as.matrix(dtm.nonsparse)))
 
 
 # N-gram Text Mining #########################################################################
@@ -138,16 +144,16 @@ c(dat.3gramfreq1$word[1:5])
 
 # 1-gram
 dat.1gram.highfreq <- dat.combine.dtm[, c(1, which(colnames(dat.combine.dtm) 
-                                   %in% c("polic", "use", "forc", 
-                                          "attack", "protest", "call")))] 
+                                                   %in% c("polic", "use", "forc", 
+                                                          "attack", "protest", "call")))] 
 
 colnames(dat.1gram.highfreq)[2:7] <- c("1_polic", "1_use", "1_forc", 
                                        "0_attack", "0_protest", "0_call")
 
 # 2-gram 
 dat.2gram.highfreq <- dat.2gram.dtm[, c(1, which(colnames(dat.2gram.dtm) 
-                                  %in% c("court rule", "polic offic", 
-                                        "climat chang", "south africa")))] 
+                                                 %in% c("court rule", "polic offic", 
+                                                        "climat chang", "south africa")))] 
 
 colnames(dat.2gram.highfreq)[2:5] <- c("1_court_rule", "1_polic_offic", 
                                        "0_climat_chang", "0_south_africa")
@@ -155,27 +161,29 @@ colnames(dat.2gram.highfreq)[2:5] <- c("1_court_rule", "1_polic_offic",
 
 # 3-gram 
 dat.3gram.highfreq <- dat.3gram.dtm[, c(1, which(colnames(dat.3gram.dtm) 
-                                   %in% c("human right watch", "nobel peac prize", "first time sinc", 
-                                          "osama bin laden", "presid barack obama", "world war ii")))] 
+                                                 %in% c("human right watch", "nobel peac prize", "first time sinc", 
+                                                        "osama bin laden", "presid barack obama", "world war ii")))] 
 
 colnames(dat.3gram.highfreq)[2:7] <- c("1_human_right_watch", "1_nobel_peac_prize", "1_first_time_sinc", 
                                        "0_osama_bin_laden", "0_presid_barack_obama", "0_world_war_ii")
 
 # assemble all partitioned datasets
-dat.prediction <- dat.combine.dtm %>% 
+dat.tm <- dat.combine.dtm %>% 
   select(Date, Label, text_body) %>% 
   left_join(x = ., dat.1gram.highfreq, by = "Date") %>%
   left_join(x = ., dat.2gram.highfreq, by = "Date") %>%
   left_join(x = ., dat.3gram.highfreq, by = "Date")
-  
 
 # Data Saving #############################################################################
-saveRDS(dat.prediction, file = "data/dat_prediction.rds")
+saveRDS(dat.tm, file = "output/dat_tm.rds")
 
+# Data Combining #########################################################################
+dat.w2v <- read.csv("output/avgw2v.csv", header=T)
 
-
-
-
-
+dat.prediction <- dat.combine.dtm %>% 
+  left_join(x=., y=dat.2gram.dtm, by = "Date") %>%
+  left_join(x=., y=dat.3gram.dtm, by = "Date") %>% 
+  left_join(x=., y=dat.w2v, by = "Date")
+saveRDS(dat.prediction, file = "output/dat_prediction.rds")
 
 
