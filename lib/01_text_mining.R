@@ -184,6 +184,7 @@ dat.prediction <- dat.combine.dtm %>%
   left_join(x=., y=dat.2gram.dtm, by = "Date") %>%
   left_join(x=., y=dat.3gram.dtm, by = "Date") %>% 
   left_join(x=., y=dat.w2v, by = "Date")
-saveRDS(dat.prediction, file = "output/dat_prediction.rds")
 
+saveRDS(dat.prediction, file = "output/dat_prediction.rds")
+write.csv(dat.prediction, "output/dat_prediction.csv")
 
