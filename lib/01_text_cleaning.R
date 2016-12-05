@@ -1,9 +1,3 @@
-# Basic Setup
-# Data Loading
-# Text Mining
-
-
-
 # Basic Setup #############################################################################
 # load package
 library(dplyr)
