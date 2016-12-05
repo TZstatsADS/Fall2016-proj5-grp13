@@ -82,7 +82,7 @@ model.save(model_name)
 
 
 # boK + tfidf
-bok = ['', '', '', '']
+bok = ['', '', '', '', '', '', '', '', '', '', '']
 while len(bok) <= 1000:
     for i in bok[-10]:
         bok.append(model.most_similar(i)[0][0])

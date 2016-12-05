@@ -26,19 +26,21 @@ for i in range(x.shape[0]):
         k += 1
 
 
-model = Doc2Vec(min_count=1, window=10, size=100, sample=1e-4, negative=5)
+model = Doc2Vec(min_count=1, window=10, size=500, sample=1e-4, negative=5, alpha=0.025, min_alpha=0.025)
 model.build_vocab(total_news)
-
 for epoch in range(10):
-    print str(i) + '/10'
-    model.train(shuffle(total_news))
+    model.train(total_news)
+    model.alpha -= 0.002  
+    model.min_alpha = model.alpha 
+
+# model.save('../output/model.doc2vec')
+# model = Doc2Vec.load('../output/model.doc2vec')
 
 tag_name = [total_news[i][1][0] for i in range(len(dta))]
-train_arrays = numpy.zeros((1989, 100))
+train_arrays = np.zeros((1989, 500))
 
 for i in range(dta.shape[0]):
-    train_arrays[i] = np.mean([model.docvecs[j]
-                               for j in tag_name if j.split('_')[0] == i], axis=1)
+	train_arrays[i] = np.mean([model.docvecs[j] for j in tag_name if j.split('_')[0] == str(i)],axis=0)
 
 
-test_arrays.to_csv('d2v.csv')
+np.savetxt('output/d2v.csv', train_arrays, delimiter=",")
