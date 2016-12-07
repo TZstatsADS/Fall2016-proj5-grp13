@@ -10,6 +10,7 @@ library(dplyr)
 library(tidyr)
 library(NLP)
 library(tm)
+library(ggplot2)
 
 # set working directory
 setwd("/Users/yanjin1993/GitHub/Fall2016-proj5-proj5-grp13/")
@@ -25,6 +26,7 @@ setwd("/Users/yanjin1993/GitHub/Fall2016-proj5-proj5-grp13/")
 datraw.djia <- read.csv("data/DJIA_table.csv", header=T)
 datraw.redditnews <- read.csv("data/RedditNews.csv", header=T)
 datraw.combine <- read.csv("data/Combined_News_DJIA.csv", header=T)
+dat.combine.new <- read.csv("output/dat_prediction 3.csv", header=T)
 
 dat.djia <- datraw.djia             # DJIA stock prices data
 dat.redditnews <- datraw.redditnews # news titles data
@@ -51,7 +53,7 @@ doc <- tm_map(doc, content_transformer(removePunctuation))
 # delete common word endings, like -s, -ed, -ing, etc.
 doc <- tm_map(doc, stemDocument, language = "english")
 # delete multi-whitespace 
-doc <- tm_map(doc, content_transformer(stripWhitespace))
+doc <- tm_map(doc, content_transformer(stripWhitespace))  # negation 
 
 # convert to Document Term Marix
 dtm <- DocumentTermMatrix(doc)
@@ -66,7 +68,6 @@ dat.combine.dtm <- cbind(Date = dat.combine$Date,
                          Label = dat.combine$Label,
                          text_body = dat.combine$text_body,
                          as.data.frame(as.matrix(dtm.nonsparse)))
-
 
 # N-gram Text Mining #########################################################################
 # helper function
@@ -96,7 +97,6 @@ dat.2gram.dtm <- gram2$dtm.df
 # get 3-gram 
 gram3 <- GetNgramDf(doc, 3, 0.01)
 dat.3gram.dtm <- gram3$dtm.df    # dim = 1989 by 58
-
 
 # Data Partition #############################################################################
 # word ranking for 0 and 1 
@@ -157,8 +157,6 @@ dat.2gram.highfreq <- dat.2gram.dtm[, c(1, which(colnames(dat.2gram.dtm)
 
 colnames(dat.2gram.highfreq)[2:5] <- c("1_court_rule", "1_polic_offic", 
                                        "0_climat_chang", "0_south_africa")
-
-
 # 3-gram 
 dat.3gram.highfreq <- dat.3gram.dtm[, c(1, which(colnames(dat.3gram.dtm) 
                                                  %in% c("human right watch", "nobel peac prize", "first time sinc", 
@@ -174,10 +172,51 @@ dat.tm <- dat.combine.dtm %>%
   left_join(x = ., dat.2gram.highfreq, by = "Date") %>%
   left_join(x = ., dat.3gram.highfreq, by = "Date")
 
+
+# Word Count Visualization ################################################################
+# 2-gram
+dat.2gramfreq <- rbind(dat.2gramfreq1 %>% mutate(indicator = "increase"), 
+                       dat.2gramfreq0 %>% mutate(indicator = "decrease")) %>% 
+  arrange(desc(num)) 
+
+
+  
+dat.2gramfreq %>% View
+# bar plot
+ggplot(rbind(dat.2gramfreq[1:30, ], data.frame(word = c("court rule", "last year", "middl east", 
+                                                        "new zealand", "south korea", "war crime"),
+                                               num = c(56, 72, 72, 85, 83, 76),
+                                               indicator = c("decrease", "decrease", "decrease", 
+                                                             "decrease", "decrease", "decrease"))),
+       aes(x = word, y =num, fill=indicator)) + 
+  geom_bar(stat="identity", position=position_dodge()) +
+  ggtitle("2-gram High-frequency Terms Distribution") +
+  theme(plot.title = element_text(lineheight=.8, face="bold"))
+  
+# 3-gram
+dat.3gramfreq <- rbind(dat.3gramfreq1 %>% mutate(indicator = "increase"), 
+                       dat.3gramfreq0 %>% mutate(indicator = "decrease")) %>% 
+  arrange(desc(num)) 
+
+# bar plot
+ggplot(rbind(dat.3gramfreq[1:20, ], data.frame(word = c("al jazeera english", "chancellor angela merkel", "child sex abus", 
+                                                        "first time sinc", "human right watch", "human right group", "nobel peac prize",
+                                                        "south china sea", "un secur council", "kim jong un"),
+                                               num = c(15, 13, 9, 10, 19, 16, 15, 16, 10, 18),
+                                               indicator = c("decrease", "increase", "increase", 
+                                                             "decrease", "decrease", "increase",
+                                                             "decrease", "decrease", "decrease", 
+                                                             "decrease"))),
+       aes(x = word, y =num, fill=indicator)) + 
+  geom_bar(stat="identity", position=position_dodge()) +
+  ggtitle("3-gram High-frequency Terms Distribution") +
+  theme(plot.title = element_text(lineheight=.8, face="bold"))
+
+
 # Data Saving #############################################################################
 saveRDS(dat.tm, file = "output/dat_tm.rds")
 
-# Data Combining #########################################################################
+# Data Combining ##########################################################################
 dat.w2v <- read.csv("output/avgw2v.csv", header=T)
 
 dat.prediction <- dat.combine.dtm %>% 
