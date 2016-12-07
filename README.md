@@ -66,17 +66,11 @@ In this section, we change thereshold values to generate different levels of pre
 
   Algorithm: gird search optimization (maximize Sharpe Ratio)
   
-  Long-only strategy: < 0.4, labelled 1; >0.4 labelled 0 
-  
-  Long-short strategy: <0.4, labelled 1; >0.7, labelled 0
-  
-+ Optimization Result:
-
   Benchmark (DJIA): Sharpe Ratio 0.011
-  Long-only strategy: Sharpe Ratio 0.044
-  Long-short strategy: Sharpe Ratio 0.040
 
-
+  Long-only strategy: < 0.4, labelled 1; >0.4 labelled 0 ==> Sharpe Ratio 0.044
+  
+  Long-short strategy: <0.4, labelled 1; >0.7, labelled 0 ==> Sharpe Ratio 0.040
 
 
 **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
