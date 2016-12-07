@@ -14,7 +14,7 @@ Constructed trading strategy basing on top ranked daily news from reddict
 #### About the dataset
 ![](https://github.com/TZstatsADS/Fall2016-proj5-proj5-grp13/blob/master/figs/dataset.jpg)
 
-#### Dataset Dummary
+#### Dataset Summary
 1. 1989x25 matrix
 2. X is top-ranked news 
 3. Y is label, representinf the movement of stock price, up or down
@@ -41,28 +41,42 @@ Constructed trading strategy basing on top ranked daily news from reddict
 - Recursive Elimination Algorithm
 - CV
 
+## Data Visualization
+In this section, our main goal is to show how uni-gram, bi-gram and tri-gram terms differ from each other among all new titles since 2008 to now. 
+![](https://github.com/TZstatsADS/Fall2016-proj5-proj5-grp13/blob/master/figs/3-gram_highfreq_word.png?raw=true)
+![](https://github.com/TZstatsADS/Fall2016-proj5-proj5-grp13/blob/master/figs/2-gram_highfreq_word.png?raw=true)
+
+In terms of the visualization of Word2vec model, we simply choose the first 100 words as an example.
+![](https://github.com/TZstatsADS/Fall2016-proj5-proj5-grp13/blob/master/figs/w2v_first_100.png)
+As we can see in the scatter plot, the word air and military have quite close distance, which could otherwise not happend in the traditional NLP, like Jaccord distance or ngram method.
+
 ## Model Selection
 - Random Forest
 - KNN
 - Naive Bayes
 
 ## Strategy Construction
-
-## Data Visualization
-- Exploratory Data Visualization 
-
-In this section, our main goal is to show how uni-gram, bi-gram and tri-gram terms differ from each other among all new titles since 2008 to now. 
-![](https://github.com/TZstatsADS/Fall2016-proj5-proj5-grp13/blob/master/figs/3-gram_highfreq_word.png?raw=true)
-![](https://github.com/TZstatsADS/Fall2016-proj5-proj5-grp13/blob/master/figs/2-gram_highfreq_word.png?raw=true)
-
-- Stock Price Prediction Plots
-
 In this section, we change thereshold values to generate different levels of prediction granularities. 
 ![](https://github.com/TZstatsADS/Fall2016-proj5-proj5-grp13/blob/master/figs/stock_pred_plot.png?raw=true) 
 
-###
-
 ## Conclusion
++ Label Accuracy Rate: 56.94%
+
++ Threshold Optimization: 
+
+  Algorithm: gird search optimization (maximize Sharpe Ratio)
+  
+  Long-only strategy: < 0.4, labelled 1; >0.4 labelled 0 
+  
+  Long-short strategy: <0.4, labelled 1; >0.7, labelled 0
+  
++ Optimization Result:
+
+  Benchmark (DJIA): Sharpe Ratio 0.011
+  Long-only strategy: Sharpe Ratio 0.044
+  Long-short strategy: Sharpe Ratio 0.040
+
+
 
 
 **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
