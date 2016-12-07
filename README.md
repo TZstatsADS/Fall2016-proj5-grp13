@@ -2,11 +2,10 @@
 
 ## Projec title: DJI trading strategy based on daily news 
 + Team members
-	+ team member 1
-	+ team member 2
-	+ team member 3
-	+ team member 4
-	+ team member 5
+	+ Han Cui
+	+ Peiran Fang
+	+ Yanjin Li
+	+ Pengfei Wang
 	
 ## Project summary: 
 
