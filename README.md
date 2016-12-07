@@ -20,7 +20,7 @@ Constructed trading strategy basing on top ranked daily news from reddict
 3. Y is label, representinf the movement of stock price, up or down
 4. Data is the timestamp
 
-## Data Cleaning
+## Data Cleaning/Text Mining
 - Encoding utf-8
 - Convert to lowercase
 - Remove unnecessary numbers
