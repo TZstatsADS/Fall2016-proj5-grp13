@@ -50,10 +50,12 @@ Constructed trading strategy basing on top ranked daily news from reddict
 
 ## Data Visualization
 - Exploratory Data Visualization 
+
 In this section, our main goal is to show how uni-gram, bi-gram and tri-gram terms differ from each other among all new titles since 2008 to now. 
 ![](https://github.com/TZstatsADS/Fall2016-proj5-proj5-grp13/blob/master/figs/3-gram_highfreq_word.png?raw=true)
 
 - Stock Price Prediction Plots
+
 In this section, we change thereshold values to generate different levels of prediction granularities. 
 ![](https://github.com/TZstatsADS/Fall2016-proj5-proj5-grp13/blob/master/figs/stock_pred_plot.png?raw=true) 
 
