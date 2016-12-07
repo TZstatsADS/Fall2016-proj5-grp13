@@ -22,9 +22,12 @@ Constructed trading strategy basing on top ranked daily news from reddict
 
 ## Data Cleaning
 - Encoding utf-8
-- Removed unnecessay stopwords: "a, the, I"
-- Removed punctuation: "#.,"
-- Stemmed words
+- Convert to lowercase
+- Remove unnecessary numbers
+- Delete english stopwords, such as "wouldn't", "not", "you", etc.
+- Remove punctuations, such as "$", ",", etc.
+- Stemmed words by deleting common endings, such as -s, -ed, -ing, etc.
+- Remove sprase terms, such as names, etc. 
 
 
 ## Feature Engineering
